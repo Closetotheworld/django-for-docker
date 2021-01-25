@@ -1,0 +1,31 @@
+version: "3"
+
+volumes:
+  postgre-volume: {}
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - postgre-volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=appDB
+      - POSTGRES_USER=myappUser
+      - POSTGRES_PASSWORD=myappSecret
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+
+  django:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - DJANGO_DB_HOST=db
+      - DJANGO_DB_PORT=5432
+      - DJANGO_DB_NAME=appDB
+      - DJANGO_DB_USERNAME=myappUser
+      - DJANGO_DB_PASSWORD=myappSecret
+      - DJANGO_SECRET_KEY=dev_secret_key
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/app/
